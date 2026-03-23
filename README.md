@@ -171,7 +171,7 @@ The OCR pipeline enhances input quality and extracts structured information from
   "ocr_confidence": 90.09,
   "is_low_quality": false
 }
-
+```
 ---
 
 ## 🔄 Application Workflow
