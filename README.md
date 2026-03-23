@@ -221,6 +221,71 @@ PRIVATE_KEY=your_private_key
 ACCOUNT_ADDRESS=your_wallet_address
 ```
 
+## OCR Processing and Output
+
+The OCR pipeline enhances input quality and extracts structured information from certificates.
+
+### Example Output
+
+```json
+{
+  "student_name": "RAI TRAYAMBAK ANANDKUMAR",
+  "semester": "6th",
+  "sgpa": 8.75,
+  "cgpa": 8.41,
+  "document_image_hash": "...",
+  "ocr_confidence": 90.09,
+  "is_low_quality": false
+}
+```
+
+---
+
+## 🔄 Application Workflow
+
+```
+Certificate Issuance (Admin)
+│
+├── Upload Certificate
+├── OCR extracts structured data
+├── Hash is generated
+├── Hash is stored on blockchain
+└── Transaction hash is returned
+
+Certificate Verification
+│
+├── Upload Certificate
+├── OCR extracts data
+├── Hash is generated
+├── Blockchain is queried
+└── Result is displayed
+
+Condition
+│
+├── Hash match       → Valid certificate
+└── Hash mismatch    → Invalid or tampered
+```
+
+---
+
+## ⚙️ Installation and Setup
+
+### 🔹 Backend Setup
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Create a `.env` file:
+```env
+RPC_URL=your_rpc_url
+CONTRACT_ADDRESS=your_contract_address
+PRIVATE_KEY=your_private_key
+ACCOUNT_ADDRESS=your_wallet_address
+```
+
 Run backend:
 ```bash
 uvicorn main:app --reload
@@ -234,7 +299,6 @@ cd CertiChain
 npm install
 npm run dev
 ```
-
 ---
 
 ## 📌 Running Services & Ports
