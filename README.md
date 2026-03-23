@@ -175,7 +175,8 @@ The OCR pipeline enhances input quality and extracts structured information from
 ---
 
 ## 🔄 Application Workflow
-```
+
+
 Certificate Issuance (Admin)
 │
 ├── Upload Certificate
@@ -183,6 +184,7 @@ Certificate Issuance (Admin)
 ├── Hash is generated
 ├── Hash is stored on blockchain
 └── Transaction hash is returned
+
 
 Certificate Verification
 │
@@ -197,6 +199,7 @@ Condition
 ├── Hash match       → Valid certificate
 └── Hash mismatch    → Invalid or tampered
 ```
+
 
 ---
 
