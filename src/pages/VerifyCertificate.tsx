@@ -5,15 +5,7 @@ import Footer from '../components/Footer';
 import FileUpload from '../components/FileUpload';
 import ResultCard from '../components/ResultCard';
 import LoadingSpinner from '../components/LoadingSpinner';
-
-interface ExtractedData {
-  studentName: string;
-  semester: string;
-  sgpa: string;
-  cgpa: string;
-  rollNumber: string;
-  issueDate: string;
-}
+import { ExtractedData } from '../types/certificate'; // ✅ FIXED
 
 export default function VerifyCertificate() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -35,27 +27,48 @@ export default function VerifyCertificate() {
 
     setStatus('processing');
 
-    setTimeout(() => {
-      const mockData: ExtractedData = {
-        studentName: 'John Doe',
-        semester: '6th Semester',
-        sgpa: '8.5',
-        cgpa: '8.2',
-        rollNumber: 'CS2021001',
-        issueDate: '2024-05-15',
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const res = await fetch("http://localhost:8000/verify", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      if (result.error) {
+        setStatus('invalid');
+        return;
+      }
+
+      const parsed = result.data;
+
+      // ✅ SAFE MAPPING
+      const mappedData: ExtractedData = {
+        studentName: parsed?.student_name || "N/A",
+        semester: parsed?.semester || "N/A",
+        sgpa: parsed?.sgpa?.toString() || "N/A",
+        cgpa: parsed?.cgpa?.toString() || "N/A",
+        rollNumber: parsed?.roll_number || "N/A",
+        issueDate: parsed?.year_of_admission || "N/A",
       };
 
-      const mockHash = '0x' + Array.from({ length: 64 }, () =>
-        Math.floor(Math.random() * 16).toString(16)
-      ).join('');
+      setExtractedData(mappedData);
+      setHash(result.hash);
+      setConfidence(parsed?.ocr_confidence ?? 0); // ✅ safer
 
-      const isValid = Math.random() > 0.3;
+      if (result.status === "verified") {
+        setStatus('valid');
+      } else {
+        setStatus('invalid');
+      }
 
-      setExtractedData(mockData);
-      setHash(mockHash);
-      setConfidence(Math.floor(Math.random() * 15) + 85);
-      setStatus(isValid ? 'valid' : 'invalid');
-    }, 3000);
+    } catch (err) {
+      console.error("Verification error:", err);
+      setStatus('invalid');
+    }
   };
 
   return (
@@ -64,6 +77,7 @@ export default function VerifyCertificate() {
 
       <main className="flex-1 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
           <div className="text-center mb-12">
             <div className="flex justify-center mb-4">
               <Shield className="h-16 w-16 text-blue-600" />
@@ -80,6 +94,7 @@ export default function VerifyCertificate() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Upload Certificate
             </h2>
+
             <FileUpload onFileSelect={handleFileSelect} />
 
             {selectedFile && status === 'idle' && (
@@ -112,8 +127,8 @@ export default function VerifyCertificate() {
               confidence={confidence}
               message={
                 status === 'valid'
-                  ? 'This certificate has been verified and matches blockchain records'
-                  : 'This certificate could not be verified. It may be tampered or not registered'
+                  ? 'This certificate has been verified and exists on blockchain'
+                  : 'Certificate not found on blockchain. It may be invalid or not issued'
               }
             />
           )}
@@ -123,34 +138,25 @@ export default function VerifyCertificate() {
               <h3 className="text-xl font-bold text-blue-900 mb-4">
                 How Verification Works
               </h3>
+
               <ol className="space-y-3 text-blue-800">
-                <li className="flex items-start">
-                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">
-                    1
-                  </span>
-                  <span>Upload the certificate you want to verify (PDF, JPG, or PNG)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">
-                    2
-                  </span>
-                  <span>Our OCR system extracts the certificate data automatically</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">
-                    3
-                  </span>
-                  <span>The certificate hash is compared against blockchain records</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0 mt-0.5">
-                    4
-                  </span>
-                  <span>Instant verification result with detailed information</span>
-                </li>
+                {[ 
+                  "Upload the certificate you want to verify",
+                  "OCR extracts certificate data",
+                  "Hash is checked on blockchain",
+                  "Instant verification result"
+                ].map((step, i) => (
+                  <li key={i} className="flex items-start">
+                    <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">
+                      {i + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
               </ol>
             </div>
           )}
+
         </div>
       </main>
 

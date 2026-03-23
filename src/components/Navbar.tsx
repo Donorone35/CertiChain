@@ -1,14 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Shield, LogOut } from 'lucide-react';
 
-interface NavbarProps {
-  isAuthenticated?: boolean;
-  userType?: 'admin' | 'user' | null;
-}
-
-export default function Navbar({ isAuthenticated = false, userType = null }: NavbarProps) {
+export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // ✅ Safe auth check
+  const isLoggedIn =
+    typeof window !== 'undefined' && localStorage.getItem('authToken');
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -20,13 +19,16 @@ export default function Navbar({ isAuthenticated = false, userType = null }: Nav
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+
+          {/* LOGO */}
           <Link to="/" className="flex items-center space-x-2 group">
             <Shield className="h-8 w-8 text-blue-600 group-hover:text-blue-700 transition-colors" />
             <span className="text-xl font-bold text-gray-900">CertiChain</span>
           </Link>
 
+          {/* NAV ITEMS */}
           <div className="flex items-center space-x-4">
-            {!isAuthenticated ? (
+            {!isLoggedIn ? (
               <>
                 {location.pathname !== '/verify' && (
                   <Link
@@ -36,6 +38,7 @@ export default function Navbar({ isAuthenticated = false, userType = null }: Nav
                     Verify Certificate
                   </Link>
                 )}
+
                 {location.pathname !== '/admin/login' && (
                   <Link
                     to="/admin/login"
@@ -55,6 +58,7 @@ export default function Navbar({ isAuthenticated = false, userType = null }: Nav
               </button>
             )}
           </div>
+
         </div>
       </div>
     </nav>

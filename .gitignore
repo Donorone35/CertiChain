@@ -1,3 +1,6 @@
+# -------------------------
+# Logs
+# -------------------------
 logs
 *.log
 npm-debug.log*
@@ -6,18 +9,49 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# -------------------------
+# Node / Frontend
+# -------------------------
+node_modules/
+dist/
+dist-ssr/
 *.local
 
+# -------------------------
+# Python / Backend
+# -------------------------
+backend/venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# -------------------------
+# Environment Variables (IMPORTANT)
+# -------------------------
+.env
+backend/.env
+frontend/.env
+
+# -------------------------
+# Temporary / Runtime Files
+# -------------------------
+backend/temp_uploads/
+
+# -------------------------
+# IDE / Editor
+# -------------------------
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+
+# -------------------------
+# OS / Misc
+# -------------------------
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.env

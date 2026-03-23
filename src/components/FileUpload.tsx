@@ -16,6 +16,8 @@ export default function FileUpload({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -44,10 +46,18 @@ export default function FileUpload({
   };
 
   const handleFile = (file: File) => {
+    // ✅ File type validation
+    if (!allowedTypes.includes(file.type)) {
+      alert('Only PDF, JPG, and PNG files are allowed');
+      return;
+    }
+
+    // ✅ File size validation
     if (file.size > maxSize) {
       alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
       return;
     }
+
     setSelectedFile(file);
     onFileSelect(file);
   };
